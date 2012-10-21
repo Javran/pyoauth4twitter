@@ -44,8 +44,11 @@ if __name__ == '__main__':
 	if answer != 'n':
 		obtain_token( tc )
 
-	tc.a_token = ACCESS_TOKEN
-	tc.a_secret = ACCESS_SECRET
+	if len( tc.a_token ) == 0:
+		tc.a_token = ACCESS_TOKEN
+	if len( tc.a_secret ) == 0:
+		tc.a_secret = ACCESS_SECRET
+
 	answer = raw_input( "Run user data accessing demo?(Y/n)" )
 	if answer != 'n':
 		access_userdata( tc )
