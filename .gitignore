@@ -25,3 +25,7 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+# config.py is used for debugging convenience
+# disclosing this file might cause some security problems.
+config.py
