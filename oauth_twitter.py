@@ -71,11 +71,13 @@ class TwitterConsumer(object):
 		  ref: https://dev.twitter.com/docs/auth/authorizing-request
 
 	"""
-	def __init__(self, key, secret, callback):
+	def __init__(self, key, secret, callback='', verbose=False):
 		"""
 			key:		consumer key
 			secret:		consumer secret
 			callback:	callback url, e.g.:http://localhost/callback/
+
+			* you can leave callback blank if you don't request access token
 		"""
 		self.key = key
 		self.secret = secret
@@ -84,8 +86,25 @@ class TwitterConsumer(object):
 		self.token_secret = ''
 		self.a_token = ''
 		self.a_secret = ''
+		self.verbose = verbose
 
 		self.connection = httplib.HTTPSConnection('api.twitter.com')
+
+	def for_user(self, a_token, a_secret):
+		"""
+			prepare for user request authorizing
+			a_token:	oauth access token
+			a_secret:	oauth access token secret
+
+		"""
+		self.a_token = a_token
+		self.a_secret = a_secret
+
+	def has_user(self):
+		"""
+			has this instance bound with a user token?
+		"""
+		return len( self.a_token ) > 0 and len( self.a_secret ) > 0
 
 	def request_token(self):
 		"""
@@ -100,8 +119,9 @@ class TwitterConsumer(object):
 		result = urlparse.parse_qs( data )
 		self.token = result["oauth_token"][0]
 		self.token_secret = result["oauth_token_secret"][0]
-		print "Token is:", self.token
-		print "Token secret is:", self.token_secret
+		
+		self._print ("Token is: " + self.token)
+		self._print ("Token secret is:" + self.token_secret)
 		
 	def authenticate(self):
 		"""
@@ -112,21 +132,16 @@ class TwitterConsumer(object):
 		result = urlparse.urlparse( data )
 		r_callback = "%s://%s%s" % (result.scheme, result.netloc, result.path)
 	
-		if r_callback == self.callback:
-			print "Callback check ok."
-		else:
-			print "Callback check failed."
-			return
-
+		assert r_callback == self.callback
+		self._print ("Callback check ok.")
+		
 		result = urlparse.parse_qs( result.query )
 		r_token = result["oauth_token"][0]	
-		if r_token == self.token:
-			print "Token check ok."
-		else:
-			print "Token check failed."
-			return
+		assert r_token == self.token
+		self._print ("Token check ok.")
+		
 		self.verifier = result["oauth_verifier"][0]
-		print "Verifier is:" , self.verifier
+		self._print ("Verifier is: " + self.verifier)
 
 	def access_token(self):
 		"""
@@ -144,9 +159,9 @@ class TwitterConsumer(object):
 		self.a_token = result["oauth_token"][0]
 		self.a_secret = result["oauth_token_secret"][0]
 
-		print "Welcome %s, your user_id is: %s" % (self.screen_name, self.user_id)
-		print "Access token is:", self.a_token
-		print "Access secret:", self.a_secret
+		self._print ("Welcome %s, your user_id is: %s" % (self.screen_name, self.user_id) )
+		self._print ("Access token is: " + self.a_token )
+		self._print ("Access secret: " + self.a_secret )
 
 	def get_response(self, twitter_request):
 		"""
@@ -184,10 +199,10 @@ class TwitterConsumer(object):
 		base_string += percent_encode( '&'.join( rawlist ) )
 
 		# craft signing key
-		if self.a_token == '' or self.a_secret == '':
-			signing_key = "%s&%s" % ( percent_encode(self.secret), percent_encode(self.token_secret) )
-		else:
+		if self.has_user():
 			signing_key = "%s&%s" % ( percent_encode(self.secret), percent_encode(self.a_secret) )
+		else:
+			signing_key = "%s&%s" % ( percent_encode(self.secret), percent_encode(self.token_secret) )
 
 		# sign base_string
 		hashed = hmac.new(signing_key, base_string, hashlib.sha1)
@@ -237,7 +252,7 @@ class TwitterConsumer(object):
 		# * if token is unavaliable, this func must be called from request_token
 		#   provide callback addr instead.
 		# * access token should have a higher priority ...
-		if len( self.a_token ) > 0 and len( self.a_secret ) > 0:
+		if self.has_user():
 			result["oauth_token"] = self.a_token
 		else:
 			if len( self.token ) > 0:
@@ -246,3 +261,10 @@ class TwitterConsumer(object):
 				result["oauth_callback"] = self.callback
 
 		return result
+
+	def _print(self, text):
+		"""
+			print things if I'm verbose
+		"""
+		if self.verbose:
+			print text

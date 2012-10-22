@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from oauth_twitter import TwitterRequest, TwitterConsumer
 import json
 
@@ -38,16 +39,15 @@ if __name__ == '__main__':
 	tc = TwitterConsumer(
 		CONSUMER_KEY, 
 		CONSUMER_SECRET, 
-		CALLBACK_URL)
+		CALLBACK_URL,
+		verbose=True)
 
 	answer = raw_input( "Run access_token obtaining demo?(Y/n)" )
 	if answer != 'n':
 		obtain_token( tc )
 
-	if len( tc.a_token ) == 0:
-		tc.a_token = ACCESS_TOKEN
-	if len( tc.a_secret ) == 0:
-		tc.a_secret = ACCESS_SECRET
+	if not tc.has_user():
+		tc.for_user(ACCESS_TOKEN, ACCESS_SECRET)
 
 	answer = raw_input( "Run user data accessing demo?(Y/n)" )
 	if answer != 'n':
