@@ -169,7 +169,17 @@ class TwitterConsumer(object):
 		"""
 		payload = self._oauth_payload_generate()
 		header = self._sign(oauth_payload = payload, request = twitter_request)
-		return twitter_request.get_response( self.connection, header )
+		return twitter_request.get_response( self.connection, header )	
+	
+	def request(self, method, url):
+		"""
+			shortcut that may client get rid of handling TwitterRequest
+				method: http method to use
+				url:	url of the request
+			the response will be returned
+		"""
+		tr = TwitterRequest( method.upper(), url )
+		return self.get_response( tr )
 
 	def _sign(self, oauth_payload, request):
 		"""

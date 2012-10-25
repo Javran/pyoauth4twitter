@@ -29,10 +29,8 @@ def obtain_token(tc):
 
 def access_userdata(tc):
 	print "Acquiring @twitter's profile..."	
-	tr = TwitterRequest("GET", "https://api.twitter.com/1.1/users/show.json?screen_name=twitter" )
-	response = tc.get_response( tr )
-	data = response.read()
-	jdata = json.loads( data )
+	response = tc.request("GET", "https://api.twitter.com/1.1/users/show.json?screen_name=twitter" )
+	jdata = json.load( response )
 	print json.dumps( jdata, sort_keys = True, indent=4 )
 
 if __name__ == '__main__':
