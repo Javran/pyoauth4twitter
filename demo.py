@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from oauth_twitter import TwitterRequest, TwitterConsumer
+from oauth.oauth_twitter import TwitterRequest, TwitterConsumer
 import json
 
 try:
