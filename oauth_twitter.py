@@ -10,7 +10,7 @@ import urlparse
 import random
 import base64
 
-percent_encode = lambda txt : urllib.quote(txt, '')
+percent_encode = lambda txt : urllib.quote(txt, '~')
 
 class TwitterRequest(object):
 	"""
@@ -198,6 +198,7 @@ class TwitterConsumer(object):
 		base_string += '&'
 		base_string += percent_encode( '&'.join( rawlist ) )
 
+		self._print( "Base string:\n" + base_string )
 		# craft signing key
 		if self.has_user():
 			signing_key = "%s&%s" % ( percent_encode(self.secret), percent_encode(self.a_secret) )
@@ -218,6 +219,7 @@ class TwitterConsumer(object):
 			oauth_entry.append( '%s="%s"' % (k, encoded_value) )
 
 		oauth_str = 'OAuth ' + ','.join(oauth_entry)
+		self._print( "OAuth header:\n" + oauth_str )
 		# field crafted
 		return { "Authorization" : oauth_str }
 
