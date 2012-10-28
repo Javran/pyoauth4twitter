@@ -10,6 +10,8 @@ import urlparse
 import random
 import base64
 
+VERSION="1.0"
+
 percent_encode = lambda txt : urllib.quote(txt, '~')
 
 class TwitterRequest(object):
@@ -123,11 +125,11 @@ class TwitterConsumer(object):
 		self._print ("Token is: " + self.token)
 		self._print ("Token secret is:" + self.token_secret)
 		
-	def authenticate(self):
+	def authorize(self):
 		"""
 			Step #2: authenticate	
 		"""
-		print "Please goto: https://api.twitter.com/oauth/authenticate?oauth_token=%s" % self.token
+		print "Please goto: https://api.twitter.com/oauth/authorize?oauth_token=%s" % self.token
 		data = raw_input( "Tell me redirected url address:\n" )
 		result = urlparse.urlparse( data )
 		r_callback = "%s://%s%s" % (result.scheme, result.netloc, result.path)

@@ -1,5 +1,4 @@
-pyoauth4twitter
-===============
+# pyoauth4twitter 1.0
 
 Provide a convenient way of obtaining access tokens &amp; authorizing HTTP requests
 

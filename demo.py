@@ -21,8 +21,8 @@ def obtain_token(tc):
 	print "Step #1: request_token"
 	tc.request_token()
 
-	print "Step #2: authenticate"
-	tc.authenticate()
+	print "Step #2: authorize"
+	tc.authorize()
 	
 	print "Step #3: access_token"
 	tc.access_token()
